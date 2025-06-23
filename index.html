@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Custom Dashboard Card Flip Visualization</title>
+    <style>
+        body {
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0f1941;
+            color: white;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card-container {
+            perspective: 1000px;
+            height: 200px;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-container:hover .card {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: #ffffff33;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .card-title {
+            color: #E6FF00;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+        .card-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+        .card-description {
+            font-size: 0.95em;
+            color: #e2e8f0;
+            line-height: 1.4;
+            text-align: center;
+            opacity: 0.9;
+        }
+        .card-back .card-description {
+            font-size: 0.9em;
+            color: #cbd5e0;
+        }
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card-container {
+                height: 180px;
+            }
+
+            .card-title {
+                font-size: 1em;
+            }
+
+            .card-header {
+                font-size: 1.1em;
+            }
+
+            .card-description {
+                font-size: 0.85em;
+            }
+        }
+        /* Subtle glow effect */
+        .card-front, .card-back {
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card-container resources-database">
+            <div class="card">
+                <div class="card-front">
+                    <div class="card-title">resources database</div>
+                    <div class="card-header">Resources Repository</div>
+                    <div class="card-description">
+                        Find all type of latest research reports and resources in one central dashboard
+                    </div>
+                </div>
+                <div class="card-back">
+                    <div class="card-title">resources database</div>
+                    <div class="card-header">Additional Features</div>
+                    <div class="card-description">
+                        • Advanced search capabilities<br>
+                        • Real-time updates<br>
+                        • Categorized by industry<br>
+                        • Export functionality<br>
+                        • Collaborative annotations
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-container nso-database">
+            <div class="card">
+                <div class="card-front">
+                    <div class="card-title">National Statistical Offices' databases</div>
+                    <div class="card-header">Economic & Talent Market Data</div>
+                    <div class="card-description">
+                        NSO's data dashboard for market intelligence
+                    </div>
+                </div>
+                <div class="card-back">
+                    <div class="card-title">NSO's-database</div>
+                    <div class="card-header">Data Sources</div>
+                    <div class="card-description">
+                        • National statistical data<br>
+                        • Labor market trends<br>
+                        • Economic indicators<br>
+                        • Demographic analysis<br>
+                        • Sector-wise breakdowns
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-container work-monitor">
+            <div class="card">
+                <div class="card-front">
+                    <div class="card-title">work monitor</div>
+                    <div class="card-header">Talent Survey Analytics</div>
+                    <div class="card-description">
+                        Comprehensive talent survey data and insights
+                    </div>
+                </div>
+                <div class="card-back">
+                    <div class="card-title">work monitor</div>
+                    <div class="card-header">Survey Capabilities</div>
+                    <div class="card-description">
+                        • Employee satisfaction metrics<br>
+                        • Skills gap analysis<br>
+                        • Compensation benchmarks<br>
+                        • Career progression tracking<br>
+                        • Predictive analytics
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script>
+        // Looker Studio Community Visualization Integration
+        if (typeof dscc !== 'undefined') {
+            dscc.subscribeToData(function(message) {
+                // Process Looker Studio data here
+                console.log('Data received from Looker Studio:', message);
+
+                // You can customize the cards based on incoming data
+                const data = message.tables.DEFAULT;
+                if (data && data.length > 0) {
+                    updateCardsWithData(data);
+                }
+            }, {transform: dscc.objectTransform});
+        }
+        function updateCardsWithData(data) {
+            // Function to update card content with Looker Studio data
+            // This allows the visualization to be dynamic based on your data source
+
+            const cards = document.querySelectorAll('.card-container');
+            data.forEach((row, index) => {
+                if (cards[index]) {
+                    const front = cards[index].querySelector('.card-front');
+                    const back = cards[index].querySelector('.card-back');
+
+                    if (row.dimensions && row.dimensions.length > 0) {
+                        front.querySelector('.card-title').textContent = row.dimensions[0] || '';
+                        front.querySelector('.card-header').textContent = row.dimensions[1] || '';
+                        front.querySelector('.card-description').textContent = row.dimensions[2] || '';
+                    }
+
+                    if (row.metrics && row.metrics.length > 0) {
+                        // You can use metrics for dynamic values, colors, etc.
+                    }
+                }
+            });
+        }
+        // Dashboard URLs - Replace these with your actual dashboard URLs
+        const dashboardUrls = {
+            'resources-database': 'https://lookerstudio.google.com/reporting/e3db1aa7-509b-476c-8f98-e15b7d4674cf/page/p_ducbgjkhtd?pli=1',
+            'nso-database': 'https://lookerstudio.google.com/reporting/c0c2dd32-ec0c-4e19-923a-4fc787c635e1/page/Hag5E',
+                'work-monitor': 'https://lookerstudio.google.com/reporting/8f62ebb8-98e6-4d06-991c-98fcfa2d11ce/page/p_05ylbgbpqd',
+            
+        };
+        // Add click functionality to redirect to dashboards 
+        document.addEventListener('click', function(e) {
+            const cardContainer = e.target.closest('.card-container');
+            if (cardContainer) {
+                // Get the card type from class name
+                const cardClass = cardContainer.className.split(' ').find(cls => cls !== 'card-container');
+
+                // Add interaction tracking for Looker Studio
+                if (typeof dscc !== 'undefined' && dscc.sendInteraction) {
+                    dscc.sendInteraction({
+                        type: 'CARD_CLICK',
+                        data: { card: cardClass }
+                    });
+                }
+
+                // Redirect to respective dashboard
+                if (dashboardUrls[cardClass]) {
+                    window.open(dashboardUrls[cardClass], '_blank');
+                }
+            }
+        });
+        // Enhanced hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card-container');
+
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
